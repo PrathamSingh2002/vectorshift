@@ -1,5 +1,4 @@
-// BaseNode.js
-import { useState } from "react";
+import React, { useState } from "react";
 import { Handle, Position } from "reactflow";
 
 export const BaseNode = ({
@@ -9,7 +8,7 @@ export const BaseNode = ({
   leftHandles = [],
   rightHandles = [],
   data = {},
-  style = {},
+  className = "",
   slotTop = null,
   slotBottom = null,
 }) => {
@@ -22,21 +21,28 @@ export const BaseNode = ({
     });
   };
 
+  const handleStyle = {
+    width: '12px',
+    height: '12px',
+    border: '2px solid white',
+  };
+
   return (
-    <div
-      style={{ width: 200, height: 80, border: "1px solid black", ...style }}
-    >
-      <div>
-        <span>{title}</span>
+    <div className={`relative w-64 bg-white rounded-lg shadow-md ${className}`}>
+      <div className="bg-gray-100 px-4 py-2 border-b border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
       </div>
-      {/* Slot for custom content above the inputs */}
-      {slotTop && <div>{slotTop}</div>}
-      <div>
+      {slotTop && <div className="px-4 py-2">{slotTop}</div>}
+      <div className="px-4 py-2 space-y-2">
         {inputs.map(({ label, key, type = "text", options }) => (
-          <label key={key}>
-            {label}:
+          <label key={key} className="block">
+            <span className="text-sm font-medium text-gray-700">{label}:</span>
             {type === "select" ? (
-              <select value={state[key] || ""} onChange={handleChange(key)}>
+              <select
+                value={state[key] || ""}
+                onChange={handleChange(key)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              >
                 {options.map((option) => (
                   <option value={option} key={option}>
                     {option}
@@ -48,30 +54,40 @@ export const BaseNode = ({
                 type={type}
                 value={state[key] || ""}
                 onChange={handleChange(key)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               />
             )}
           </label>
         ))}
       </div>
-      {/* Slot for custom content below the inputs */}
-      {slotBottom && <div>{slotBottom}</div>}
-      {leftHandles.map((handle) => (
-        <Handle
+      {slotBottom && <div className="px-4 py-2">{slotBottom}</div>}
+      {leftHandles.map((handle, index) => (
+        <div
           key={handle.id}
-          type="target"
-          position={Position.Left}
-          id={handle.id}
-          style={handle.style}
-        />
+          className="absolute left-0 transform -translate-x-1/2"
+          style={{ top: `${(index + 1) * 25}%` }}
+        >
+          <Handle
+            type="target"
+            position={Position.Left}
+            id={handle.id}
+            style={{...handleStyle, ...handle.style, backgroundColor: '#3B82F6'}}
+          />
+        </div>
       ))}
-      {rightHandles.map((handle) => (
-        <Handle
+      {rightHandles.map((handle, index) => (
+        <div
           key={handle.id}
-          type="source"
-          position={Position.Right}
-          id={handle.id}
-          style={handle.style}
-        />
+          className="absolute right-0 transform translate-x-1/2"
+          style={{ top: `${(index + 1) * 25}%` }}
+        >
+          <Handle
+            type="source"
+            position={Position.Right}
+            id={handle.id}
+            style={{...handleStyle, ...handle.style, backgroundColor: '#10B981'}}
+          />
+        </div>
       ))}
     </div>
   );
